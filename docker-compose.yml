@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  api-slim:
+    build: .
+    container_name: php-7.3_api-slim
+    volumes:
+      - ./:/var/www/html/
+    ports:
+      - "5000:80"
+    networks:
+      - backend
+  database:
+    image: mysql:5.7
+    container_name: mysql_api-slim
+    ports:
+      - "3307:3306"
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: gerenciadorlojas
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    networks:
+      - backend
+networks:
+  backend:
