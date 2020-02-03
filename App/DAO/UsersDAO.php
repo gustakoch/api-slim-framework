@@ -19,8 +19,7 @@ class UsersDAO extends Connection {
 
         $user = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-        if (!$user)
-            return null;
+        if (!$user) return null;
 
         $userModel = new UserModel();
         $userModel->setId($user['id']);

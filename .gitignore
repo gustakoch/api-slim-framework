@@ -2,3 +2,4 @@ vendor/
 data/
 env.php
 composer.lock
+.vscode

@@ -15,10 +15,11 @@ use App\Middlewares\JwtDateTimeMiddleware;
 $app = new \Slim\App(slimConfiguration());
 
 $app->post('/login', AuthController::class . ':login');
+$app->post('/refresh', AuthController::class . ':refreshToken');
 
-$app->get('/teste', function() { echo "Deu boa!"; })
-    ->add(new JwtDateTimeMiddleware())
-    ->add(jwtAuth());
+$app->get('/teste', function() {
+    echo "Deu boa!";
+})->add(new JwtDateTimeMiddleware())->add(jwtAuth());
 
 $app->get('/', function($request, $response, $args) {
     return $response->withJson(["message" => "It's Working"]);

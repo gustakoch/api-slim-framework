@@ -19,6 +19,10 @@ class TokenModel {
      */
     private $refresh_token;
     /**
+     * @var int
+     */
+    private $active;
+    /**
      * @var string
      */
     private $expired_at;
@@ -51,8 +55,7 @@ class TokenModel {
      * @param int $id_user
      * @return self
      */
-    public function setIdUser(int $id_user): self
-    {
+    public function setIdUser(int $id_user): self {
         $this->id_user = $id_user;
         return $this;
     }
@@ -60,8 +63,7 @@ class TokenModel {
     /**
      * @return string
      */
-    public function getToken(): string
-    {
+    public function getToken(): string {
         return $this->token;
     }
 
@@ -69,8 +71,7 @@ class TokenModel {
      * @param string $token
      * @return self
      */
-    public function setToken(string $token): self
-    {
+    public function setToken(string $token): self {
         $this->token = $token;
         return $this;
     }
@@ -78,8 +79,7 @@ class TokenModel {
     /**
      * @return string
      */
-    public function getRefreshToken(): string
-    {
+    public function getRefreshToken(): string {
         return $this->refresh_token;
     }
 
@@ -87,17 +87,31 @@ class TokenModel {
      * @param string $refresh_token
      * @return self
      */
-    public function setRefreshToken(string $refresh_token): self
-    {
+    public function setRefreshToken(string $refresh_token): self {
         $this->refresh_token = $refresh_token;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getActive() {
+        return $this->active;
+    }
+
+    /**
+     * @param int $active
+     * @return self
+     */
+    public function setActive(int $active): self {
+        $this->active = $active;
         return $this;
     }
 
     /**
      * @return string
      */
-    public function getExpiredAt(): string
-    {
+    public function getExpiredAt(): string {
         return $this->expired_at;
     }
 
@@ -105,8 +119,7 @@ class TokenModel {
      * @param string $expired_at
      * @return self
      */
-    public function setExpiredAt(string $expired_at): self
-    {
+    public function setExpiredAt(string $expired_at): self {
         $this->expired_at = $expired_at;
         return $this;
     }
