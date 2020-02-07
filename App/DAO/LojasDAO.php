@@ -32,7 +32,7 @@ class LojasDAO extends Connection {
         $stmt->execute();
     }
 
-    public function updateLoja(int $id, LojaModel $loja): void {
+    public function updateLoja(int $id, LojaModel $loja): bool {
         $sql = "UPDATE lojas
             SET
                 name = :name,
@@ -46,15 +46,25 @@ class LojasDAO extends Connection {
         $stmt->bindValue('phone', $loja->getPhone());
         $stmt->bindValue('address', $loja->getAddress());
         $stmt->execute();
+
+        if ($stmt->rowCount())
+            return true;
+
+        return false;
     }
 
-    public function deleteLoja(int $id): void {
+    public function deleteLoja(int $id): bool {
         $sql = "DELETE FROM lojas
             WHERE id = :id";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue('id', $id);
         $stmt->execute();
+
+        if ($stmt->rowCount())
+            return true;
+
+        return false;
     }
 
 }

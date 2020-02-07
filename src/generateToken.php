@@ -16,23 +16,15 @@ function generateToken(UserModel $user): array {
     ];
 
     $token = JWT::encode($tokenPayload, getenv('JWT_SECRET_KEY'));
-    $refreshTokenPayload = [
-        'email' => $user->getEmail(),
-        'random' => uniqid()
-    ];
-    $refreshToken = JWT::encode($refreshTokenPayload, getenv('JWT_SECRET_KEY'));
 
     $tokenModel = new TokenModel();
     $tokenModel->setIdUser($user->getId());
     $tokenModel->setToken($token);
-    $tokenModel->setRefreshToken($refreshToken);
     $tokenModel->setExpiredAt($expiredAt);
 
-    $tokensDAO = new TokensDAO();
-    $tokensDAO->saveToken($tokenModel);
+    // The token and refresh token generated will not be saved on the database anymore
+    // $tokensDAO = new TokensDAO();
+    // $tokensDAO->saveToken($tokenModel);
 
-    return [
-        'token' => $token,
-        'refreshToken' => $refreshToken
-    ];
+    return [ 'token' => $token ];
 }

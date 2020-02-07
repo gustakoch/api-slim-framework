@@ -77,22 +77,6 @@ class TokenModel {
     }
 
     /**
-     * @return string
-     */
-    public function getRefreshToken(): string {
-        return $this->refresh_token;
-    }
-
-    /**
-     * @param string $refresh_token
-     * @return self
-     */
-    public function setRefreshToken(string $refresh_token): self {
-        $this->refresh_token = $refresh_token;
-        return $this;
-    }
-
-    /**
      * @return int
      */
     public function getActive() {

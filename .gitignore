@@ -3,3 +3,4 @@ data/
 env.php
 composer.lock
 .vscode
+API Slim MySQL Session.sql

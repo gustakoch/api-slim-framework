@@ -5,62 +5,45 @@ use function src\generateToken;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use App\DAO\TokensDAO;
-use App\DAO\UsersDAO;
-use Firebase\JWT\JWT;
 
-/*
-    CRIAR UMA MÉTODO PARA VERIFICAR SE O USUÁRIO JÁ TEM UM TOKEN CRIADO NO BANCO E SE ESTÁ ATIVO!
-    CASO ESTEJA ATIVO, SETAR PARA "0" O ACTIVE E GERAR UM NOVO TOKEN.
-*/
+use App\Exceptions\MyException;
+use App\DAO\UsersDAO;
 
 class AuthController {
     public function login(Request $request, Response $response, array $args): Response {
         $data = $request->getParsedBody();
+        $email = $data['email'];
+        $password = $data['password'];
 
         $usersDAO = new UsersDAO();
-        $user = $usersDAO->getUserByEmail($data['email']);
+        $user = $usersDAO->getUserByEmail($email);
 
-        if (is_null($user))
-            return $response->withStatus(401)->withJson(['error' => 'Usuário e/ou senha inválido. Tente novamente']);
+        try {
+            if (is_null($user))
+                throw new MyException('E-mail não encontrado', 400);
 
-        if (!password_verify($data['password'], $user->getPassword()))
-            return $response->withStatus(401)->withJson(['error' => 'Usuário e/ou senha inválido. Tente novamente']);
+            if (!password_verify($password, $user->getPassword()))
+                throw new MyException('A senha informada está incorreta', 400);
+        } catch (MyException $e) {
+            return $response->withJson([
+                'error' => MyException::class,
+                'status' => 400,
+                'userMessage' => 'Usuário ou senha inválida! Tente novamente.',
+                'devMessage' => $e->getMessage()
+            ], 400);
+        }
 
-
-        $tokenAndRefreshTokenGenerated = generateToken($user);
-
-        $response = $response->withJson([
-            'token' => $tokenAndRefreshTokenGenerated['token'],
-            'refresh_token' => $tokenAndRefreshTokenGenerated['refreshToken']
-        ]);
+        $generated = generateToken($user);
+        $response = $response->withJson(['token' => $generated['token']]);
 
         return $response;
     }
 
     public function refreshToken(Request $request, Response $response, array $args): Response {
-        $refreshToken = $request->getParsedBody()['refreshToken'];
-        $refreshTokenDecoded = JWT::decode($refreshToken, getenv('JWT_SECRET_KEY'), ['HS256']);
+        $user = $request->getAttribute('user');
 
-        $tokenDAO = new TokensDAO();
-        $refreshTokenExists = $tokenDAO->verifyRefreshToken($refreshToken);
-
-        if (!$refreshTokenExists)
-            return $response->withStatus(401)->withJson(['error' => 'Token inválido ou não encontrado']);
-
-        $userDAO = new UsersDAO();
-        $user = $userDAO->getUserByEmail($refreshTokenDecoded->email);
-
-        if (!$user)
-            return $response->withStatus(401)->withJson(['error' => 'Usuário não encontrado']);
-
-        $tokenDAO->updateTokenStatus($refreshToken);
-        $tokenAndRefreshTokenGenerated = generateToken($user);
-
-        $response = $response->withJson([
-            'token' => $tokenAndRefreshTokenGenerated['token'],
-            'refresh_token' => $tokenAndRefreshTokenGenerated['refreshToken']
-        ]);
+        $generated = generateToken($user);
+        $response = $response->withJson(['token' => $generated['token']]);
 
         return $response;
     }
